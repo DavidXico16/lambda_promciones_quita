@@ -9,7 +9,7 @@ const pool = new Pool({
 });
 
 exports.handler = async (event) => {
-    console.log('Detalle Adicionales Condiciones Handler:', JSON.stringify(event, null, 2));
+    console.log('Detalle Segmentacion Handler - Event received:', JSON.stringify(event, null, 2));
     
     if (event.httpMethod !== 'POST') {
         return {
@@ -27,6 +27,7 @@ exports.handler = async (event) => {
     try {
         const body = JSON.parse(event.body || '{}');
         
+        // Validar campo requerido
         if (!body.idFlujo) {
             return {
                 statusCode: 400,
@@ -40,6 +41,7 @@ exports.handler = async (event) => {
             };
         }
 
+        // Convertir idFlujo a número
         const idFlujo = parseInt(body.idFlujo);
         
         if (isNaN(idFlujo)) {
@@ -55,22 +57,18 @@ exports.handler = async (event) => {
             };
         }
 
-        // Consultar la tabla datos_condiciones por id_promociones_ttp pero solo traemos adicional
+        // Consultar la tabla datos_catalogo_segmentacion por id_promociones_ttp
         const query = `
-            SELECT adicional FROM public.datos_condiciones 
+            SELECT * FROM public.datos_catalogo_segmentacion 
             WHERE id_promociones_ttp = $1
-            ORDER BY id_datos_condiciones ASC
+            ORDER BY id_datos_catalogo_segmentacion ASC
         `;
 
         console.log(`Ejecutando consulta para id_promociones_ttp: ${idFlujo}`);
         
         const result = await pool.query(query, [idFlujo]);
         
-        console.log(`result rows[0]: ${result.rows[0]}`);
-        console.log(`result length: ${result.rows.length}`);
-        console.log(`result length: ${result.rows.length}`);
-
-        if ( result.rows.length == 0 || result.rows[0].adicional === null) {
+        if (result.rows.length === 0) {
             return {
                 statusCode: 404,
                 headers: {
@@ -84,6 +82,7 @@ exports.handler = async (event) => {
             };
         }
 
+
         return {
             statusCode: 200,
             headers: {
@@ -93,13 +92,13 @@ exports.handler = async (event) => {
                 'Access-Control-Allow-Headers': 'Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token'
             },
             body: JSON.stringify({
-                message: 'Datos de adicinal de condiciones obtenidos exitosamente',
+                message: 'Datos de datos_segmentacion obtenidos exitosamente',
                 datos: result.rows[0]
             })
         };
 
     } catch (error) {
-        console.error('Error en detalleAdicinalCondicionesHandler:', error);
+        console.error('Error en detalleSegmentacionQuitaHandler:', error);
         
         return {
             statusCode: 500,

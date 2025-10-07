@@ -1,4 +1,3 @@
-// handlers/planesHandler.js
 const { Client } = require('pg');
 
 const dbConfig = {
@@ -12,7 +11,6 @@ const dbConfig = {
   }
 };
 
-// Función para convertir fecha de DD/MM/YYYY a YYYY-MM-DD
 function convertirFecha(fecha) {
   if (!fecha) return null;
   
@@ -52,6 +50,7 @@ exports.handler = async (event) => {
       try {
         body = JSON.parse(event.body);
       } catch (parseError) {
+        console.log("parseError: ", parseError)
         return {
           statusCode: 400,
           headers: headers,
@@ -152,7 +151,6 @@ exports.handler = async (event) => {
         ];
         
         console.log('UPDATE values:', values);
-        const result = await client.query(updateQuery, values);
         
       } else {
         // INSERT - Si no existe, crear nuevo registro

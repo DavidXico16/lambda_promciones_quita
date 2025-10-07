@@ -12,7 +12,7 @@ const dbConfig = {
 };
 
 exports.handler = async (event) => {
-  console.log('Datos Cupones - idFlujo : ', JSON.stringify(event, null, 2));
+  console.log('Datos Incovivencias - idFlujo : ', JSON.stringify(event, null, 2));
   
   const headers = {
     'Content-Type': 'application/json',
@@ -41,6 +41,7 @@ exports.handler = async (event) => {
   try {
     body = JSON.parse(event.body);
   } catch (error) {
+    console.log("Error: ", error )
     return {
       statusCode: 400,
       headers,
@@ -63,7 +64,7 @@ exports.handler = async (event) => {
 
     const query = `
       SELECT *
-      FROM datos_cupones
+      FROM datos_inconvivencia
       WHERE id_promociones_ttp = $1
     `;
     const result = await client.query(query, [body.idFlujo]);
@@ -83,13 +84,13 @@ exports.handler = async (event) => {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        message: 'Datos obtenidos exitosamente de datos_cupones',
+        message: 'Datos obtenidos exitosamente de datos_inconvivencias',
         data: result.rows[0]
       })
     };
 
   } catch (error) {
-    console.error('Error en POST datos_cupones por el idFlujo:', error);
+    console.error('Error en POST datos_inconvivencias por el idFlujo:', error);
 
     return {
       statusCode: 500,
